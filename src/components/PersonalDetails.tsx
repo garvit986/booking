@@ -9,7 +9,7 @@ interface Props{
   setFormData: React.Dispatch<React.SetStateAction<FormData>>
   formData: FormData
 }
-
+// .....
 const PersonalDetails:
 React.FC<Props> = ({formData, setFormData})=>{
   const {register, handleSubmit, control} = useForm<PersonalDetailsType>({
