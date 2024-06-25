@@ -1,48 +1,83 @@
-import React from 'react'
-import {PersonalDetails as PersonalDetailsType, FormData} from '../types'
-import { useNavigate } from 'react-router-dom'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { DevTool } from '@hookform/devtools'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import { TextField, Button, Container, Typography } from '@mui/material';
+import { DevTool } from '@hookform/devtools';
+import { PersonalDetails as PersonalDetailsType, FormData } from '../types';
 
-
-interface Props{
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>
-  formData: FormData
+interface Props {
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  formData: FormData;
 }
-// .....
-const PersonalDetails:
-React.FC<Props> = ({formData, setFormData})=>{
-  const {register, handleSubmit, control} = useForm<PersonalDetailsType>({
-    defaultValues: formData.personalDetails || {}
-  })
 
-const navigate = useNavigate()
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required('Username is required'),
+  email: Yup.string().email('Email is invalid').required('Email is required'),
+  phone: Yup.string().required('Phone number is required'),
+  address: Yup.string().required('Address is required'),
+});
 
-const onSubmit:
-SubmitHandler<PersonalDetailsType> = (data) =>{
-  setFormData(prev=>({ ...prev, personalDetails:data}))
-  navigate('/services')
-}
-return (
-  <div>
-      <h1>Form</h1>
+const PersonalDetails: React.FC<Props> = ({ formData, setFormData }) => {
+  const { register, handleSubmit, control, formState: { errors } } = useForm<PersonalDetailsType>({
+    defaultValues: formData.personalDetails || {},
+    resolver: yupResolver(validationSchema),
+  });
+
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<PersonalDetailsType> = (data) => {
+    setFormData((prev) => ({ ...prev, personalDetails: data }));
+    navigate('/services');
+  };
+
+  return (
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        Personal Details
+      </Typography>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <label htmlFor='Username'>Username</label>
-          <input type='text' id = 'username' {...register("username",{required:{value: true,message:'username required'}})} />
-
-          <label htmlFor='email'>Email</label>
-          <input type='email' id='email' {...register("email",{required:{value: true,message:'email required'}})} />
-
-          <label htmlFor='Phone'>Phone</label>
-          <input type='text' id='phone' {...register("phone", {required:{value: true,message:'phone number required'}})} />
-
-          <label htmlFor='Address'>Address</label>
-          <input type='text' id='address' {...register("address", {required:{value: true,message:'Address required'}})} />
-
-          <button>Next</button>
+        <TextField
+          label="Username"
+          {...register('username')}
+          error={!!errors.username}
+          helperText={errors.username ? errors.username.message : ''}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Email"
+          type="email"
+          {...register('email')}
+          error={!!errors.email}
+          helperText={errors.email ? errors.email.message : ''}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Phone"
+          {...register('phone')}
+          error={!!errors.phone}
+          helperText={errors.phone ? errors.phone.message : ''}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Address"
+          {...register('address')}
+          error={!!errors.address}
+          helperText={errors.address ? errors.address.message : ''}
+          fullWidth
+          margin="normal"
+        />
+        <Button variant="contained" color="primary" type="submit">
+          Next
+        </Button>
       </form>
       <DevTool control={control} />
-  </div>
-)
-}
-export default PersonalDetails
+    </Container>
+  );
+};
+
+export default PersonalDetails;

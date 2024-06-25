@@ -7,12 +7,12 @@ export interface PersonalDetails{
 
 export interface ServiceDetails{
     vehicleType: string,
-    modelNumber: string | number
+    modelNumber: string 
 }
 
 export interface BookingDetails{
-    appointmentDate: string | number,
-    appointmentTime: string | number
+    appointmentDate: string  
+    appointmentTime: string
 }
 
 export interface FormData{
